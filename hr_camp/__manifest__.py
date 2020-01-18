@@ -16,15 +16,15 @@
     'author': "ODOO Intelligent Technology Dubai",
     'website': "http://odoo.ae",
 	'email': "essam@odoo.ae",
-    'license': "OPL-1",
+    'license': "AGPL-3",
+    'price': 185.99,
+    'currency': 'EUR',
 
     # Categories can be used to filter modules in modules listing
     # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
     # for the full list
-    'category': 'Hr',
+    'category': 'hr',
     'version': '0.1',
-    'price': 185.99,
-    'currency': 'EUR',
 
     # any module necessary for this one to work correctly
     'depends': ['base','hr'],
