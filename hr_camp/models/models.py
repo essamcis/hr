@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
+from odoo.exceptions import AccessError, UserError, ValidationError
+
 
 
 class camp_details(models.Model):
@@ -33,7 +35,23 @@ class camp_details_rooms(models.Model):
     note = fields.Text('Note')
     roomcapacity = fields.Integer('Room Capacity')
     roomoccupancy = fields.Integer('Room Occupancy')
-    employee_room = fields.One2many('hr.employee','room_ids','Employee Room Information')         
+    employee_room = fields.One2many('hr.employee','room_ids','Employee Room Information')
+    
+    @api.multi 
+    def name_get(self):
+        res = super(camp_details_rooms, self).name_get()
+        for rom in self:
+            if rom and rom.name and rom.roomcapacity :
+                if rom.roomoccupancy < rom.roomcapacity:
+                    sname = rom.name  +' AVALB: ' + str(rom.roomcapacity - rom.roomoccupancy) 
+                    res.append((rom.id,sname))
+                else :
+                    sname = rom.name  + '  FULL'
+                    res.append((rom.id,sname))
+
+        return res
+
+
             
    
 
@@ -46,7 +64,10 @@ class camp_transfer(models.Model):
     emp_name = fields.Many2one('hr.employee','Employee Name')
     camp_no = fields.Many2one('camp.details','Transfer To Camp')
     emp_job = fields.Many2one('hr.job','Job',readonly=True)
-    trn_room = fields.Many2one('camp.details.rooms','Transfer To Room')
+    trn_room = fields.Many2one('camp.details.rooms',string='Transfer To Room' ,
+    domain="[('campcode_id','!=', False),('campcode_id','=',camp_no)]")
+    
+
     gender =  fields.Selection([('male', 'Male'),('female', 'Female')], 'Gender',readonly=True)
     camp_cur =  fields.Many2one('camp.details','Current Camp')
     cur_room =  fields.Many2one('camp.details.rooms','Current Room')
@@ -56,15 +77,26 @@ class camp_transfer(models.Model):
     def _onchange_emp_name(self):
         self.camp_cur = self.emp_name.camp_ids
         self.cur_room = self.emp_name.room_ids
-      
+    
+    @api.onchange('camp_cur')
+    def _onchange_camp_cur(self):
+        self.camp_cur = self.emp_name.camp_ids
+        self.cur_room = self.emp_name.room_ids
+
+    @api.onchange('cur_room')
+    def _onchange_cur_room(self):
+        self.camp_cur = self.emp_name.camp_ids
+        self.cur_room = self.emp_name.room_ids
+
+    #@api.onchange('trn_room')
+    #def _onchange_trn_room(self):
+    #    return {'domain':{'trn_room': [('campcode_id','!=',False),('campcode_id','=',self.camp_no),('roomcapacity','!=',self.trn_room.roomoccupancy)]}}
+
+        
+
  
 class camp_hr(models.Model):
     _inherit = ['hr.employee']
     camp_ids = fields.Many2one('camp.details', string='Related Camp')
     room_ids = fields.Many2one('camp.details.rooms', string='Camp Room No.',domain="[('campcode_id','=','camp_ids')]")
-
-    
-
-
-
 

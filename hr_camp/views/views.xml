@@ -101,6 +101,19 @@
         </record>
 
 
+<record id="hr_cam_room_tree" model="ir.ui.view">
+                <field name="name">Room Tree</field>
+                <field name="model">camp.details.rooms</field>
+                <field name="arch" type="xml">
+                  
+<tree string="camp.details">
+    <field name="name" select="1"></field>
+    <field name="roomcapacity"> </field>
+    <field name="roomoccupancy" select="1"> </field>
+    
+</tree>
+</field>
+</record>
 
 <!--Camp information action-->
 
@@ -124,8 +137,7 @@
             <field name="act_window_id" ref="camp_info_act"/>
         </record> 
 
-
-
+     
 
 
 
@@ -142,14 +154,14 @@
                         <group name="group_main_left">
                         
                     <field name="emp_name" on_change="onchange_emp_id(emp_name)" required="1"/>
-                    <field name="camp_cur" />
-                    <field name="cur_room" />
+                    <field name="camp_cur" on_change="onchange_camp_cur(camp_cur)" />
+                    <field name="cur_room" on_change="onchange_cur_room(cur_room)" />
                     <field name="camp_no" required="1"/>
-                    <field name="trn_room" domain="[('campcode_id','=',camp_no)]" required="1"/> 
+                    <field name="trn_room" required="1"/> 
                          </group>
 
                     <group name="group_main_right">
-                        <!-- Left empty for extensions -->
+                        <!-- Left empty for extensions (('campcode_id','=',camp_no),-->
                     </group>
                      </group>                   
                 </form>
@@ -166,8 +178,8 @@
             <field name="arch" type="xml">
                 <tree string="Camp Transfer">
                         <field name="emp_name"/>
+                        <field name="camp_cur"/>
                         <field name="camp_no"/>
-                        <field name="emp_job"/>
                         <field name="trn_room"/>                                                                
                                             
                 </tree>
@@ -189,7 +201,7 @@
 
 <!--Camp information menu-->    
 
-        <menuitem id="emp_occupation_menu"  name="Accommodation"  parent="hr_attendance.menu_hr_attendance_manage_attendances" sequence="11"/>
+        <menuitem id="emp_occupation_menu"  name="Accommodation"  parent="hr.menu_hr_root" sequence="11"/>
         <menuitem action="camp_info_act" id="camp_info_menu"     parent="emp_occupation_menu" sequence="1"/>
         <menuitem action="open_view_camp_transfer_form" id="menu_view_camp_transfer_form"     parent="emp_occupation_menu" sequence="2"/>
 
